@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2022 perillamint
+#
+# SPDX-License-Identifier: CC0-1.0
+
+[package]
+name = "anime-game-daily-rewward"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hyper = "0.14.20"
+toml = "0.5.9"
+clap = { version = "3.1.18", features = ["derive"] }
+serde = { version = "1.0.137", features = ["derive"] }
+lazy_static = "1.4.0"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
