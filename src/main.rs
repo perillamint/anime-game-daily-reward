@@ -23,16 +23,30 @@ lazy_static! {
     static ref ARGS: Args = Args::parse();
 }
 
-fn get_actid(svctype: SVCType) -> String {
+fn get_svcpair(svctype: &SVCType) -> (String, String, String) {
     match svctype {
-        SVCType::Genshin => "e202102251931481".to_owned(),
-        SVCType::Honkai => "e202110291205111".to_owned(),
-        SVCType::GenshinCN => "e202009291139501".to_owned(),
-        SVCType::HonkaiCN => "e202006291139501".to_owned(),
+        SVCType::Genshin => (
+            "hk4e-api-os".to_owned(),
+            "sol".to_owned(),
+            "e202102251931481".to_owned(),
+        ),
+        SVCType::Honkai => (
+            "sg-public-api".to_owned(),
+            "mani".to_owned(),
+            "e202110291205111".to_owned(),
+        ),
+        SVCType::GenshinCN => (
+            "hk4e-api-os".to_owned(),
+            "sol".to_owned(),
+            "e202009291139501".to_owned(),
+        ),
+        SVCType::HonkaiCN => (
+            "sg-public-api".to_owned(),
+            "mani".to_owned(),
+            "e202006291139501".to_owned(),
+        ),
     }
 }
-
-static API_SERVER: &str = "https://hk4e-api-os.hoyoverse.com";
 
 #[tokio::main]
 async fn main() {
@@ -44,8 +58,11 @@ async fn main() {
 
     for session in cfg.sessions {
         let svctype = config::convert_svctype(&session.svctype).unwrap();
-        let actid = get_actid(svctype);
-        let url = format!("{}/event/sol/sign?act_id={}&lang=ko-kr", API_SERVER, actid);
+        let svcpair = get_svcpair(&svctype);
+        let url = format!(
+            "https://{}.hoyoverse.com/event/{}/sign?act_id={}&lang=ko-kr",
+            svcpair.0, svcpair.1, svcpair.2
+        );
         let mut headers = header::HeaderMap::new();
         let cookie_str = format!("ltoken={}; ltuid={}", session.ltoken, session.ltuid);
         let cookie = header::HeaderValue::from_str(&cookie_str).unwrap();
