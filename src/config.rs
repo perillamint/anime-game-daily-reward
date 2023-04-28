@@ -41,6 +41,7 @@ pub(crate) fn read_config(cfgpath: &str) -> Config {
 pub(crate) enum SVCType {
     Genshin,
     Honkai,
+    HonkaiStarRail,
     GenshinCN,
     HonkaiCN,
 }
@@ -49,6 +50,7 @@ pub(crate) fn convert_svctype(svctype: &str) -> Result<SVCType, String> {
     match svctype {
         "genshin" => Ok(SVCType::Genshin),
         "honkai" => Ok(SVCType::Honkai),
+        "honkaistarrail" => Ok(SVCType::HonkaiStarRail),
         "genshin_cn" => Ok(SVCType::GenshinCN),
         "honkai_cn" => Ok(SVCType::HonkaiCN),
         _ => Err("Invalid svctype".to_string()),

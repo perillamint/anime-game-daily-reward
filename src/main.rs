@@ -35,6 +35,11 @@ fn get_svcpair(svctype: &SVCType) -> (String, String, String) {
             "mani".to_owned(),
             "e202110291205111".to_owned(),
         ),
+        SVCType::HonkaiStarRail => (
+            "sg-public-api".to_owned(),
+            "luna/os".to_owned(),
+            "e202303301540311".to_owned(),
+        ),
         SVCType::GenshinCN => (
             "hk4e-api-os".to_owned(),
             "sol".to_owned(),
