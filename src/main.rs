@@ -70,16 +70,10 @@ async fn main() {
     for session in cfg.sessions {
         let svctype = config::convert_svctype(&session.svctype).unwrap();
         let svcpair = get_svcpair(&svctype);
-        let url = match svcpair.1.as_str() {
-            "sol" => format!(
-                "https://{}.hoyoverse.com/event/{}/sign?lang=ko-kr",
-                svcpair.0, svcpair.1
-            ),
-            _ => format!(
-                "https://{}.hoyoverse.com/event/{}/sign?act_id={}&lang=ko-kr",
-                svcpair.0, svcpair.1, svcpair.2
-            ),
-        };
+        let url = format!(
+            "https://{}.hoyoverse.com/event/{}/sign?lang=ko-kr",
+            svcpair.0, svcpair.1
+        );
         let mut headers = header::HeaderMap::new();
         let cookie_str = format!("ltoken={}; ltuid={}", session.ltoken, session.ltuid);
         let cookie = header::HeaderValue::from_str(&cookie_str).unwrap();
