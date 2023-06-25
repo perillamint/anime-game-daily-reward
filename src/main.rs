@@ -8,6 +8,7 @@ use reqwest::{header, Client};
 mod config;
 
 use config::{read_config, SVCType};
+use serde::{Deserialize, Serialize};
 
 #[macro_use]
 extern crate lazy_static;
@@ -19,6 +20,11 @@ struct Args {
     config: String,
 }
 
+#[derive(Serialize, Deserialize)]
+struct ApiPayload {
+    act_id: String,
+}
+
 lazy_static! {
     static ref ARGS: Args = Args::parse();
 }
@@ -26,7 +32,7 @@ lazy_static! {
 fn get_svcpair(svctype: &SVCType) -> (String, String, String) {
     match svctype {
         SVCType::Genshin => (
-            "hk4e-api-os".to_owned(),
+            "sg-hk4e-api".to_owned(),
             "sol".to_owned(),
             "e202102251931481".to_owned(),
         ),
@@ -64,16 +70,32 @@ async fn main() {
     for session in cfg.sessions {
         let svctype = config::convert_svctype(&session.svctype).unwrap();
         let svcpair = get_svcpair(&svctype);
-        let url = format!(
-            "https://{}.hoyoverse.com/event/{}/sign?act_id={}&lang=ko-kr",
-            svcpair.0, svcpair.1, svcpair.2
-        );
+        let url = match svcpair.1.as_str() {
+            "sol" => format!(
+                "https://{}.hoyoverse.com/event/{}/sign?lang=ko-kr",
+                svcpair.0, svcpair.1
+            ),
+            _ => format!(
+                "https://{}.hoyoverse.com/event/{}/sign?act_id={}&lang=ko-kr",
+                svcpair.0, svcpair.1, svcpair.2
+            ),
+        };
         let mut headers = header::HeaderMap::new();
         let cookie_str = format!("ltoken={}; ltuid={}", session.ltoken, session.ltuid);
         let cookie = header::HeaderValue::from_str(&cookie_str).unwrap();
         headers.insert("Cookie", cookie);
 
-        let msg = client.post(url).headers(headers).send().await.unwrap();
+        let api_payload = ApiPayload {
+            act_id: svcpair.2.clone(),
+        };
+
+        let msg = client
+            .post(url)
+            .headers(headers)
+            .json(&api_payload)
+            .send()
+            .await
+            .unwrap();
         println!(
             "Query result of {}: {}",
             session.ltuid,
